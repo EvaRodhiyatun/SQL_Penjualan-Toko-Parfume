@@ -1,0 +1,61 @@
+#produk beraroma "Sauvage"
+select distinct product_name, brand
+from `toko_parfum.orders`
+where product_name like '%Sauvage%'
+order by product_name, brand;
+
+#transaksi 3 brand sekaligus
+select count(*) as jumlah_transaksi 
+from `toko_parfum.orders`
+where brand in ('Dior', 'Chanel', 'Lattafa');
+
+#transaksi di bulan Desember 2025
+select count(*) as jumlah_transaksi
+from `toko_parfum.orders`
+where extract (month from sales_date) = 12
+  and extract (year from sales_date) = 2025;
+
+#transaksi pembelian terbanyak
+select order_id, sales_date, product_name, quantity, total_sales
+from `toko_parfum.orders`
+order by quantity desc, total_sales desc
+limit 10;
+
+#transaksi kelas menengah
+select count(*) as jumlah_transaksi
+from `toko_parfum.orders`
+where total_sales between 1000000 and 2000000;
+
+#rata-rata nilai transaksi per channel
+select channel, round(avg(total_sales), 0) as rata_rata_total_sales
+from `toko_parfum.orders`
+group by channel
+order by rata_rata_total_sales desc;
+
+#jenis wangi terlaris
+select jenis_wangi, count(*) as jumlah_transaksi
+from `toko_parfum.orders`
+group by jenis_wangi
+having count(*) > 500
+order by jumlah_transaksi desc;
+
+#presentase transaksi selesai
+select round(100.0 * count(case when status = 'Selesai' then 1 end) / count(*), 0) as persen_selesai
+FROM `toko_parfum.orders`;
+
+#brand terlaris buat pembeli wanita
+select brand, count(*) as jumlah_transaksi, sum(total_sales) as total_penjualan
+from `toko_parfum.orders`
+where gender = 'Wanita'
+group by brand
+having count(*) >= 100
+order by total_penjualan desc
+limit 5;
+
+#konsentrasi dengan rata-rata harga mahal
+select konsentrasi, round(avg(price), 0) as rata_rata_harga
+from `toko_parfum.orders`
+group by konsentrasi
+having avg(price) > 500000
+order by rata_rata_harga desc;
+
